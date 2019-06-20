@@ -2,7 +2,7 @@ from functools import partial
 from multiprocessing import Manager, Pool, Process
 
 from uniko import calculate_reputation_article
-from load.kb import create_kb
+from process.kb import create_kb
 from semrep.semrep import SemRepGraph
 
 
