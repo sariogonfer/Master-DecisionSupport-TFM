@@ -11,3 +11,7 @@ def update_kb(G, g):
 
 def save_gpickle(G, path):
     return nx.write_gpickle(G, path)
+
+
+def load_gpickle(path):
+    return nx.read_gpickle(path)

@@ -2,7 +2,7 @@ from functools import partial
 from multiprocessing import Manager, Pool, Process
 
 from uniko import calculate_reputation_article
-from process.kb import create_kb
+from load.kb import create_kb
 from semrep.semrep import SemRepGraph
 
 
@@ -23,24 +23,25 @@ def process_worker(Q, doi, text):
     return True
 
 
-def callback_worker(Q, callback):
+def update_graph_worker(Q, update_graph):
     G = create_kb()
     while True:
         g = Q.get()
         if g is None:
             Q.put(G)
             return
-        callback(G, g)
+        update_graph(G, g)
 
 
-def process_docs_from_iterable(docs, callback):
+def process_docs_from_iterable(docs, update_graph, n=NUMBER_OF_PROCESS):
     Q = Manager().Queue()
-    callback_proc = Process(target=callback_worker, args=(Q, callback))
-    callback_proc.start()
-    with Pool(NUMBER_OF_PROCESS) as p:
+    update_graph_proc = Process(target=update_graph_worker,
+                                args=(Q, update_graph))
+    update_graph_proc.start()
+    with Pool(n) as p:
         p.starmap_async(partial(process_worker, Q), docs)
         p.close()
         p.join()
         Q.put(None)
-        callback_proc.join()
+        update_graph_proc.join()
     return Q.get()

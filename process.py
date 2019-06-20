@@ -14,7 +14,7 @@ def process(args):
            if args.e else
            load_docs_from_dir(args.s, args.d)
            )
-    G = process_docs_from_iterable(in_, update_kb)
+    G = process_docs_from_iterable(in_, update_kb, n=args.n)
     save_gpickle(G, args.outfile)
 
 
@@ -24,6 +24,8 @@ def main(arguments):
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-s', help="# of docs to process", type=int,
                         required=True)
+    parser.add_argument('-n', help="# of pararel process", type=int,
+                        default=32)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '-d', help="Directory that contein the docs to process.")
